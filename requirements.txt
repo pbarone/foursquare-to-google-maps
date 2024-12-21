@@ -1,0 +1,7 @@
+requests
+colorama
+selenium
+keyboard
+rapidfuzz
+pandas
+python-dotenv
