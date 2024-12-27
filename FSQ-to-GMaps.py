@@ -7,6 +7,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.remote.webelement import WebElement
+from selenium.webdriver.chrome.options import Options
 
 import selenium
 import keyboard
@@ -20,7 +21,7 @@ import os
 from datetime import datetime
 
 
-
+chromedriver_path = r"d:\Users\pbaro\Downloads\Temp\chromedriver-win64\chromedriver-win64\chromedriver.exe"
 load_dotenv()
 
 csv_file = 'output.csv'
@@ -43,21 +44,24 @@ mapURL = "https://www.google.com/maps"
 def openGoogleMaps():
     userDataDir = f"user-data-dir={USER_DIR}"
     
-    # assign url in the webdriver object
-    options = selenium.webdriver.ChromeOptions()
-    options.add_argument(userDataDir)
+    # Set up Chrome options
+    chrome_options = Options()
+    chrome_options.add_argument("log-level=3")
+    chrome_options.add_argument("disable-logging")
+    chrome_options.add_experimental_option("excludeSwitches", ["enable-logging"])
+    chrome_options.add_experimental_option("excludeSwitches", ["enable-automation"])
+    chrome_options.add_experimental_option("useAutomationExtension", False)
+    chrome_options.add_experimental_option("prefs", {"credentials_enable_service": False, "profile.password_manager_enabled": False})
+    chrome_options.add_argument(userDataDir)
 
-    options.add_argument("log-level=3")
-    options.add_argument("disable-logging")
-    options.add_experimental_option("excludeSwitches", ["enable-logging"])
-    options.add_experimental_option("excludeSwitches", ["enable-automation"])
-    options.add_experimental_option("useAutomationExtension", False)
-    options.add_experimental_option("prefs", {"credentials_enable_service": False, "profile.password_manager_enabled": False})
 
-    driver = webdriver.Chrome(options)
+    # Initialize Chrome WebDriver
+    driver = webdriver.Chrome(options=chrome_options)
+
+    # Navigate to Google
+    driver.get(mapURL)
     driver.implicitly_wait(0.1)
 
-    driver.get(mapURL)
     sleep(2)
     return driver
 
@@ -360,9 +364,20 @@ if __name__ == "__main__":
             fullSearchTerm = place_name + " " + place_address
             print(f" - Place name: {place_name} - {place_address}")
 
+            keywords = place_name.split()
+
+            # Custom scorer function
+            def custom_score(s1, s2, **kwargs):  # Add **kwargs to handle additional arguments
+                # Primary score using token_sort_ratio
+                primary = fuzz.token_sort_ratio(s1, s2)
+                # Keyword boost: Add points for each keyword match
+                keyword_matches = sum(1 for kw in keywords if kw.lower() in s2.lower())
+                keyword_boost = 15 * keyword_matches  # Adjust boost value if needed
+                return primary + keyword_boost
+
             if len(placesNames) > 0:
                 # check if the place already exists
-                best_match, score, y = process.extractOne(place_name.upper(), placesNames, scorer=fuzz.QRatio)
+                best_match, score, y = process.extractOne(place_name, placesNames, scorer=custom_score)
                 if score > 60:
                     write_to_csv(csv_file, {'List name':FSQList, 'Place name': place_name, 'Place address': place_address, 'Result': 'ALREADY IN LIST', 'Date': executionTimeStamp})
                     print(f" - Place already exists in list: {best_match}")
