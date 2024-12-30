@@ -113,7 +113,15 @@ def OpenListsPage(driver):
     sleep(3)
 
     #click on the menu button
-    driver.find_element(By.XPATH, '//*[@id="QA0Szd"]/div/div/div[1]/div[1]/ul/li[1]/button').click()
+    try:
+        driver.find_element(By.XPATH, '//*[@id="QA0Szd"]/div/div/div[1]/div[1]/ul/li[1]/button').click()
+    except:
+        print("Menu button not found, browse to google maps and click on the menu button manually to continue. This can happen sometimes as Goofle Maps is not always consistent and sometimes it shows a captcha.")
+        # wait for user to browse to google maps manually
+        print("Press any key to continue...")
+        # wait for user to press any key
+        keyboard.read_key()
+
     sleep(0.1)
 
     #click on the "Saved" button
@@ -153,7 +161,7 @@ def create_GMapList(listName):
 
     createButtton = driver.find_element(By.CLASS_NAME, "okDpye")
     createButtton.click()
-    sleep(1)
+    sleep(5)
 
     driver.find_element(By.CSS_SELECTOR, '[aria-label="Back"]').click()
     sleep(1)
@@ -476,5 +484,7 @@ if __name__ == "__main__":
                 write_to_csv(csv_file, {'List name':FSQList, 'Place name': place_name, 'Place address': place_address, 'Result': 'ERROR', 'Date': executionTimeStamp})
                 
 
-    exit(1)
+    exit(0)
+
+    
 
