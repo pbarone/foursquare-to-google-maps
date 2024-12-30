@@ -377,8 +377,8 @@ if __name__ == "__main__":
 
             if len(placesNames) > 0:
                 # check if the place already exists
-                best_match, score, y = process.extractOne(place_name, placesNames, scorer=custom_score)
-                if score > 60:
+                best_match, score, y = process.extractOne(place_name.upper(), placesNames, scorer=custom_score)
+                if score > 90:
                     write_to_csv(csv_file, {'List name':FSQList, 'Place name': place_name, 'Place address': place_address, 'Result': 'ALREADY IN LIST', 'Date': executionTimeStamp})
                     print(f" - Place already exists in list: {best_match}")
                     continue
@@ -427,9 +427,9 @@ if __name__ == "__main__":
             SearchField.clear()
             sleep(.5)
 
-            for k in place_name:
+            for k in fullSearchTerm:
                 SearchField.send_keys(k)
-                sleep(random.uniform(0, 0.1))
+                sleep(random.uniform(0.05, 0.15))
             
             sleep(2)
 
@@ -442,15 +442,6 @@ if __name__ == "__main__":
                 write_to_csv(csv_file, {'List name':FSQList, 'Place name': place_name, 'Place address': place_address, 'Result': 'NOT FOUND', 'Date': executionTimeStamp})
                 print(f" - Place not found in GMap: {place_name}")
                 continue
-
-            if len(searchResultsPlacesNames) > 1:
-                for k in " " + place_address:
-                    SearchField.send_keys(k)
-                    sleep(random.uniform(0, 0.1))
-                
-                searchResultsPlacesNames = driver.find_elements(By.XPATH, '//*[@id="cell-1x0"]/span[2]')
-            
-            sleep(2)
 
             searchResultsPlacesAddress = driver.find_elements(By.XPATH, '//*[@id="cell-1x0"]/span[3]')
             searchResultsPlacesNamesText = get_elements_text_safe(searchResultsPlacesNames)
