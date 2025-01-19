@@ -17,8 +17,9 @@ This project consists of Python scripts to automate the process of exporting sav
 
 1. **Python**: Ensure Python 3.7 or higher is installed.
 2. **Google Chrome**: Latest version of Google Chrome is required.
-3. **ChromeDriver**: Install the appropriate version of ChromeDriver matching your Google Chrome version.
+3. **ChromeDriver**: Install the appropriate version of ChromeDriver matching your Google Chrome version ([Instructions](https://developer.chrome.com/docs/chromedriver/get-started)).
 4. **Foursquare Access Token**: Obtain an access token from Foursquare Studio ([Instructions](https://studio.foursquare.com/map/tokens.html)).
+5. **UV**: An extremely fast Python package and project manager, written in Rust [Instructions](https://docs.astral.sh/uv/getting-started/installation/).
 
 ---
 
@@ -34,7 +35,17 @@ This project consists of Python scripts to automate the process of exporting sav
 2. Install dependencies:
 
    ```bash
-   pip install -r requirements.txt
+   # initialize the UV project
+   uv init
+
+   # Create a virtual environments
+   uv venv --python 3.12
+   
+   # Activate the environment
+   source .venv/bin/activate
+
+   # install the requirements
+   uv pip install -r requirements.txt
    ```
 
 3. Create a `.env` file in the root directory and add the following variables:
@@ -45,7 +56,7 @@ This project consists of Python scripts to automate the process of exporting sav
    ```
 
    - `FSQACCESS_TOKEN`: Replace `your_foursquare_access_token` with your actual token.
-   - `USER_DIR`: Replace `path_to_chrome_user_data_directory` with the path to your Chrome user data directory for managing Google account sessions.
+   - `USER_DIR`: Replace `path_to_chrome_user_data_directory` with the path to your Chrome user data directory for managing Google account sessions [Instructions](https://chromium.googlesource.com/playground/chromium-org-site/+/refs/heads/main/user-experience/user-data-directory.md).
 
 ---
 
